@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def le_csv(path: str, nomes_cols: list = None, salvar: bool = True, df_caracteres: bool = False):
+def le_csv(path: str, nomes_cols: list = None, header: str = None, salvar: bool = True, df_caracteres: bool = False):
     """
     Lê um arquivo CSV e retorna um dataframe do pandas formatado
 
@@ -10,7 +10,7 @@ def le_csv(path: str, nomes_cols: list = None, salvar: bool = True, df_caractere
     df_caracteres : boolean que indica se o dataframe é o dataframe de caracteres
     """
     try:
-        df = pd.read_csv(path)
+        df = pd.read_csv(path, header=header)
 
         if df_caracteres:
             tam_y = 7
