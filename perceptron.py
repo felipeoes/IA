@@ -1,14 +1,72 @@
 import math
 
+
 class Perceptron(object):
-    def __init__(self, pesos: dict, bias: float):
+    def __init__(self, pesos: dict, bias: float, tx_aprendizagem: float):
         self.pesos = pesos
         self.bias = bias
-    
+        self.tx_aprendizagem = tx_aprendizagem
 
-    def funcao_ativacao(self, y_in: float) -> float:
+    def funcao_ativacao(self, valor_in: float):
         """ Retorna o valor da função de ativação para o valor y_in """
-        return 1 / (1 + math.exp(-y_in))
+        return 1 / (1 + math.exp(-valor_in))
 
-    def train(self, X: list, y: list, epochs: int = 10, learning_rate: float = 0.1, df_caracteres: bool = False, indice_char: int = None):
-        """ Treina o perceptron com os dados de entrada X e saída y de acordo com os parâmetros especificados"""
+    def derivada_funcao_ativacao(self, y_in: float):
+        """ Retorna o valor da derivada da função de ativação para o valor y_in """
+        return self.funcao_ativacao(y_in) * (1 - self.funcao_ativacao(y_in))
+
+    def calcula_saida(self, X: list):
+        """ Calcula a saída do perceptron para o valor X """
+        valor_in = self.bias + sum([X[col_num] * self.pesos[col_num]
+                                    for col_num in range(len(X))])
+        return valor_in, self.funcao_ativacao(valor_in)
+
+    def calcula_erro(self, y_real: list or float, y_calculado: list or float, valor_in: list or float):
+        """ Calcula o termo de informação do erro para o valor y_real e y_calculado """
+        erros = []
+        termos_inf_erro = []
+
+        if not isinstance(y_real, list):
+            erro = y_real - y_calculado
+            termo_inf_erro = erro * \
+                self.derivada_funcao_ativacao(valor_in)
+            return [erro], [termo_inf_erro]
+
+        for y in y_real:
+            erro = y - y_calculado
+            termo_inf_erro = erro * self.derivada_funcao_ativacao(valor_in)
+            erros.append(erro)
+            termos_inf_erro.append(termo_inf_erro)
+
+        return erros, termos_inf_erro
+
+    def calcula_correcao(self, termos_inf_erro: list or float, saida_camada: list or float):
+        """ Calcula a correção dos pesos do perceptron """
+        correcoes = []
+        termo_inf_erro = sum(termos_inf_erro) if isinstance(termos_inf_erro, list) else termos_inf_erro
+        
+        for j in self.pesos:
+            correcao = self.tx_aprendizagem * termo_inf_erro * saida_camada[j]
+            correcoes.append(correcao)
+
+        correcoes_bias = self.tx_aprendizagem * termo_inf_erro
+        
+        return correcoes, correcoes_bias
+
+        # if not isinstance(term_inf_erro, list):
+        #     saida_camada = saida_camada[0] if isinstance(
+        #         saida_camada, list) else saida_camada
+        #     return {"peso": term_inf_erro * saida_camada * self.tx_aprendizagem,
+        #             "bias": term_inf_erro * self.tx_aprendizagem}
+
+        # soma_saidas = sum(saida_camada)
+        # soma_termos = sum(term_inf_erro)
+        # correcao = {"peso": soma_termos * soma_saidas * self.tx_aprendizagem,
+        #             "bias": soma_termos * self.tx_aprendizagem}
+        # return correcao
+
+    def altera_pesos(self, correcao: dict):
+        """ Altera os pesos do perceptron """
+        for col_num in range(len(self.pesos)):
+            self.pesos[col_num] += correcao[0][col_num]
+            self.bias += correcao[1]
