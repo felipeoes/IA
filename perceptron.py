@@ -1,6 +1,7 @@
 import math
 
 
+
 class Perceptron(object):
     def __init__(self, pesos: dict, bias: float, tx_aprendizagem: float):
         self.pesos = pesos
@@ -14,6 +15,7 @@ class Perceptron(object):
     def derivada_funcao_ativacao(self, y_in: float):
         """ Retorna o valor da derivada da função de ativação para o valor y_in """
         return self.funcao_ativacao(y_in) * (1 - self.funcao_ativacao(y_in))
+
 
     def calcula_saida(self, X: list):
         """ Calcula a saída do perceptron para o valor X """
@@ -53,20 +55,16 @@ class Perceptron(object):
         
         return correcoes, correcoes_bias
 
-        # if not isinstance(term_inf_erro, list):
-        #     saida_camada = saida_camada[0] if isinstance(
-        #         saida_camada, list) else saida_camada
-        #     return {"peso": term_inf_erro * saida_camada * self.tx_aprendizagem,
-        #             "bias": term_inf_erro * self.tx_aprendizagem}
-
-        # soma_saidas = sum(saida_camada)
-        # soma_termos = sum(term_inf_erro)
-        # correcao = {"peso": soma_termos * soma_saidas * self.tx_aprendizagem,
-        #             "bias": soma_termos * self.tx_aprendizagem}
-        # return correcao
-
     def altera_pesos(self, correcao: dict):
         """ Altera os pesos do perceptron """
         for col_num in range(len(self.pesos)):
             self.pesos[col_num] += correcao[0][col_num]
             self.bias += correcao[1]
+
+    def converte_json(self):
+        """ Retorna o objeto em formato JSON """
+        return {
+            "media_pesos": sum(self.pesos.values()) / len(self.pesos),
+            "bias": self.bias,
+            "tx_aprendizagem": self.tx_aprendizagem
+        }
