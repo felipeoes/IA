@@ -1,0 +1,17 @@
+:root {
+    --monospace-font: 'IBM Plex Mono', monospace;
+    --text-font: 'Work Sans', sans-serif;
+    --primary-color: #e44c75;
+    --primary-dark-color: #c21947;
+    --secondary-color: #52d2dd;
+    --text-color: black;
+    --secondary-dark-color: #1a2432;
+    --yelow: #f3ca70;
+}
+
+body.--dark {
+    --background-color: #1a2432;
+    --text-color: white;
+    --primary-color: #52d2dd;
+    --primary-dark-color: #178f9a;
+}

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inteligência Artificial - Multilayer Perceptron</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles/variables.css">
+    <link rel="stylesheet" href="./styles/defaults.css">
+    <link rel="stylesheet" href="./styles/notebook.css">
+    <link rel="stylesheet" href="./styles/letter.css">
+    <link rel="stylesheet" href="./styles/table.css">
+</head>
+<body>
+    <header class="container">
+        <h1> Inteligência Artificial <br/> Multilayer Perceptron </h1>
+        <ul>
+            <li class="header__memeber">Primeiro Membro <strong> 119985231 </strong></li>
+            <li class="header__memeber">Segundo Membro <strong> 119985231 </strong> </li>
+            <li class="header__memeber">Terceiro Membro <strong> 119985231 </strong></li>
+            <li class="header__memeber">Quarto Membro <strong> 119985231 </strong></li>
+        </ul>
+
+    </header>
+    <main class="container">
+        <section>
+            <h1 class="section-title">Definições da Rede</h1>
+            <p>
+                A nossa Multilayer Perceptron foi construida com as seguintes características:
+            </p>
+            <blockquote>
+                <p> <strong> Camada de Entrada: </strong> 63 neurônios</p>
+                <p> <strong> Camada Escondida: </strong> 15 neurônios</p>
+                <p> <strong> Camada de Saída: </strong> 7 neurônios</p>
+                <p> <strong> Função de Ativação: </strong> Sigmóide</p>    
+            </blockquote>
+        </section>
+        <section>
+            <h1 class="section-title">Definições do Treinamento</h1>
+            <p>
+                Para realizer o treinamento da nossa rede neural:
+            </p>
+            
+        </section>
+        <section>
+            <h1 class="section-title">Log do Treinamento</h1>
+            <div class="log-table">
+
+            </div>
+        </section>
+        <section>
+            <h1 class="section-title">Desempenho da Rede</h1>
+            <div class="graph">
+                <canvas id="mlp-error" width="400" height="400"></canvas>
+            </div>
+        </section>
+        <section>
+            <h1 class="section-title">Relatório das Predições</h1>
+        </section>
+        <section>
+            <h1 class="section-title">Matriz de Confusão</h1>
+        </section>
+        <section>
+            <h1 class="section-title">Predição em Tempo Real</h1>
+            <div class="nav-letters">
+            </div>
+            <div class="letter"></div>
+            <button type="button" id="socket-send" class="btn-predict"> Predizer </button>
+            <dialog>
+                <div class="container">
+                    <h1> A letra predita foi: </h1>
+                    <p class="predicted"></p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Indice do Neurônio</th>
+                                <th>Resposta</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <button class="dialog__btn-close">Fechar</button>
+                </div>
+            </dialog>
+
+        </section>
+
+    </main>
+    <script src="./scripts/chart.min.js"></script>
+    <script src="./scripts/NotebookPageController.js" type="module" async></script>
+</body>
+</html>
