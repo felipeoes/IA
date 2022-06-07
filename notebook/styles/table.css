@@ -1,0 +1,10 @@
+.log-table {
+    max-height: 500px;
+    overflow: scroll;
+}
+
+
+.log-table thead tr > th:nth-child(2),
+.log-table  tbody > tr td:nth-child(2) {
+    display: none;
+}

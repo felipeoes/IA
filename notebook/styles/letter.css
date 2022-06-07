@@ -1,0 +1,35 @@
+.letter-container {
+    display: grid;
+    grid-template-columns: repeat(7, 30px);
+    grid-template-rows: repeat(9, 30px);
+}
+
+.letter-pixel {
+    position: relative;
+    cursor: cell;
+}
+
+.letter-pixel.--none {
+    display: none;
+}
+
+.letter-input {
+    position: absolute;
+    height: 0;
+    width: 0;
+    top: 0;
+    left: 0;
+}
+
+.letter-decoration {
+    position: absolute;
+    height: 30px;
+    width: 30px;
+    top: 0;
+    left: 0;
+    border: 1px solid black;
+}
+
+.letter-input:checked~.letter-decoration {
+    background-color: var(--primary-color);
+}

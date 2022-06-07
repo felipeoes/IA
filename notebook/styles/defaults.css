@@ -1,0 +1,93 @@
+/** Pensar na Fonte:  DM Mono **/
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--text-font);
+}
+
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.container {
+    max-width: 1200px;
+    padding: 1rem;
+    margin: 0 auto;
+}
+
+h1 {
+    font-family: var(--monospace-font);
+    color: var(--primary-color);
+    padding-bottom: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+p {
+    font-size: 1.25rem;
+    line-height: 1.85rem;
+    color: var(--text-color);
+    margin-bottom: 1.25rem;
+    max-width: 800px;
+}
+
+blockquote {
+    font-family: var(--monospace-font);
+    line-height: 1.85rem;
+    padding: 1rem 2rem;
+    border-left: 4px solid var(--primary-color);
+}
+
+blockquote:hover {
+    border-left-color: #c21947;
+}
+
+blockquote p {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+section {
+    padding: 1rem;
+    margin-bottom: 2rem;
+    cursor: pointer;
+    transition: transform ease-in-out .25s;
+}
+
+section:hover {
+    border: 2px solid var(--primary-dark-color);
+    border-radius: 4px;
+    transform: translate(5px);
+
+}
+
+.section-title {
+    padding-top: calc(1.25rem / 2);
+    padding-left: 2rem;
+    border-left: 4px solid var(--primary-color);
+    border-radius: 4px;
+}
+
+.graph {
+    height: 300px;
+    width: 300px;
+}
+
+dialog[open] {
+    margin: auto;
+}
+
+dialog button {
+    display: block;
+    width: 6rem;
+    height: 2rem;
+    cursor: pointer;
+    border: 1px solid var(--primary-color);
+    background-color: transparent;
+    border-radius: 4px;
+    color: var(--primary-color);
+    font-size: 1.25rem;
+}
