@@ -42,7 +42,6 @@ class CamadaEscondida(CamadaMLP):
     def calcula_correcao(self, valores_in: list, entradas: list, termos_inf_erro_saida: list):
         """ Calcula o erro e as devidas correções dos pesos dos neuronios da camada escondida """
         correcoes = {}
-        # erros = []
         for indice, (neuronio, valor_in, termo_inf_erro_saida) in enumerate(zip(self.neuronios, valores_in, termos_inf_erro_saida)):
             termo_inf_erro_saida = sum(termo_inf_erro_saida) if isinstance(
                 termo_inf_erro_saida, list) else termo_inf_erro_saida
@@ -138,17 +137,16 @@ class MultilayerPerceptron(object):
                 self.altera_pesos(self.camada_escondida, correcao_escondida)
 
                 erro_inter = 0
-                for erro_inter in erro_saida:
-                    erro_inter = [err ** 2 for err in erro_inter]
+                for erros in erro_saida:
+                    erro_inter = [err ** 2 for err in erros]
                     erro = sum(erro_inter)
                     erro_geral = erro_geral + erro
 
-            
             erro_geral = erro_geral / len(X)
-            
+
             self.gerenciador_logs.adiciona_log(self.__class__.__name__, x,  saidas_saida, self.camada_escondida.neuronios,
                                                self.camada_saida.neuronios, self.tx_aprendizagem, epoca, -1, self.limiar, epocas, erro, erro_geral)
-            
+
             print(f"Epoca: {epoca} - Erro: {erro_geral}")
 
             if erro_geral < self.limiar:

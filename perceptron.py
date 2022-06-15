@@ -1,7 +1,6 @@
 import math
 
 
-
 class Perceptron(object):
     def __init__(self, pesos: dict, bias: float, tx_aprendizagem: float):
         self.pesos = pesos
@@ -15,7 +14,6 @@ class Perceptron(object):
     def derivada_funcao_ativacao(self, y_in: float):
         """ Retorna o valor da derivada da função de ativação para o valor y_in """
         return self.funcao_ativacao(y_in) * (1 - self.funcao_ativacao(y_in))
-
 
     def calcula_saida(self, X: list):
         """ Calcula a saída do perceptron para o valor X """
@@ -45,14 +43,15 @@ class Perceptron(object):
     def calcula_correcao(self, termos_inf_erro: list or float, saida_camada: list or float):
         """ Calcula a correção dos pesos do perceptron """
         correcoes = []
-        termo_inf_erro = sum(termos_inf_erro) if isinstance(termos_inf_erro, list) else termos_inf_erro
-        
+        termo_inf_erro = sum(termos_inf_erro) if isinstance(
+            termos_inf_erro, list) else termos_inf_erro
+
         for j in self.pesos:
             correcao = self.tx_aprendizagem * termo_inf_erro * saida_camada[j]
             correcoes.append(correcao)
 
         correcoes_bias = self.tx_aprendizagem * termo_inf_erro
-        
+
         return correcoes, correcoes_bias
 
     def altera_pesos(self, correcao: dict):
