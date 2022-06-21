@@ -1,0 +1,187 @@
+</html><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inteligência Artificial | Visualizador de Dataset</title>
+</head>
+<style>
+    .letters-container {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 3rem;
+        margin-bottom: 3rem;
+    }
+
+    .letter-container {
+        display: grid;
+        grid-template-columns: repeat(7, 20px);
+        grid-template-rows: repeat(9, 20px);
+    }
+
+    .letters-container:nth-of-type(1) {
+        background-color: rgb(91, 242, 192);
+    }
+
+    .letters-container:nth-of-type(2) {
+        background-color: rgb(235, 80, 80);
+    }
+    
+    .letters-container:nth-of-type(3) {
+        background-color: rgb(142, 235, 80);
+    }
+
+
+    .letter-pixel {
+        position: relative;
+        cursor: pointer;
+    }
+
+    .letter-pixel.--none {
+        display: none;
+    }
+
+    .letter-input {
+        position: absolute;
+        height: 0;
+        width: 0;
+        top: 0;
+        left: 0;
+    }
+
+    .letter-decoration {
+        position: absolute;
+        height: 20px;
+        width: 20px;
+        top: 0;
+        left: 0;
+        border: 1px solid black;
+    }
+
+    .letter-input:checked ~ .letter-decoration {
+        background-color: black;
+    }
+</style>
+<body>
+    <main class="wrapper">
+        <div>
+            <h1>Inteligência Artificial - IA</h1>
+            <input type="text" placeholder="Nome do CSV em data" data-csv />
+            <input type="number" data-csv-target value="7" />
+            <button type="button" data-btn-csv>Carregar</button>
+        </div>
+        <div data-csv-models>
+
+        </div>
+        <div class="letters-container"></div>
+        <div class="letters-container"></div>
+        <div class="letters-container"></div>
+        <a id="btn-download" style="display: none;">Fazer Download</a>
+        <a data-csv-download>Fazer Download do Dataset</a>
+        <script type="module">
+            import visualizer from '../scripts/DatasetVisualizer.js'
+
+            const containers = Array.from(document.querySelectorAll('.letters-container'))
+            const input = document.querySelector('[data-csv]')
+            const target = document.querySelector('[data-csv-target]')
+            const btn = document.querySelector('[data-btn-csv]')
+            const downloader = document.querySelector('[data-csv-download]')
+
+            const model = document.querySelector('[data-csv-models]')
+
+            const datasets = [
+                { name: "Dataset 7 Simples", file: "caracteres-limpo", size: 7},
+                { name: "Dataset 7 Ruido I", file: "caracteres-ruido", size: 7},
+                { name: "Dataset 7 Ruido II", file: "caracteres_ruido20", size: 7},
+                { name: "Dataset 11 Simples", file: "caracteres-limpo-11", size: 11},
+                { name: "Dataset 11 Ruido I", file: "dataset-11-letras-ruido-simples", size: 11},
+                { name: "Dataset 11 Ruido II", file: "dataset_11_caracteres_ruido_total_final_2", size: 11},
+            ]
+
+            const removeElements = (container) => container.replaceChildren()
+
+            const cleanup = (containers) => containers.forEach(removeElements)
+
+            const build_path = (name) => `../../data/datasets/${name}.csv`
+
+            const change_dataset = (name, size) => {
+                cleanup(containers)
+                visualizer({
+                    file: build_path(name),
+                    number_of_letters: size
+                })
+            }
+
+            const build_buttons = () => {
+                Object
+                .values(datasets)
+                .map( ({ name, file, size}) => {
+                    const btn = document.createElement("button")
+                    btn.setAttribute("type", "button")
+
+                    btn.addEventListener("click", () => change_dataset(file, size))
+
+                    btn.textContent = name
+
+                    return btn
+                })
+                .forEach( button => {
+                    model.insertAdjacentElement("beforeend", button)
+                })
+            }
+
+            btn.addEventListener("click", () => change_dataset(input.value, target.value))
+                
+            const build_csv = () => {
+
+                const container = containers.at(0)
+
+                const first_letter = container.querySelector(".letter-container")
+
+                const chunk_size = first_letter.children.length
+
+                const target_size = target.valueAsNumber
+
+                const line_size = 63 + target_size
+
+                const csv = Array
+                                .from(container.querySelectorAll(".letter-container"))
+                                .map( (container) => Array.from(container.querySelectorAll("input") ))
+                                .map( (inputs_chunks) => {
+                                    const line_as_numbers = inputs_chunks.map( (input, index) => {
+                                        // index 0 - 62 => valores como -1
+                                        // 63 ~ 70 => valores como 0 (target)
+                                        const false_value = index < 63 ? -1 : 0
+                                        return input.checked ? 1 : false_value
+                                    })
+
+                                    const line_length = line_as_numbers.length
+
+                                    if ( line_length  === line_size ) return line_as_numbers
+
+                                    const empty_values = Array.from({ length: (line_size - line_length )}, () => 0 )
+
+                                    line_as_numbers.push(empty_values)
+
+                                    return line_as_numbers
+                                })
+                                .map( (csv_lines) => csv_lines.join(","))
+                                .reduce( (file, line) => file.concat(line).concat("\n"), "")
+                
+                const blob = new Blob(Array.of(csv), { type: "text/csv;charset=utf-8"})
+
+                downloader.href = URL.createObjectURL(blob)
+
+                downloader.setAttribute("download", "dataset_caraceteres.csv")
+           }
+
+            downloader.addEventListener("click", build_csv)
+
+            change_dataset("dataset_11_caracteres_ruido_total_final_2", 11)
+            build_buttons()
+
+        </script>
+    </main>
+</body>
+</html>

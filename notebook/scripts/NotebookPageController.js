@@ -1,4 +1,4 @@
-import dataset from "../data/dataset.js";
+import dataset from "../data/modelo-letras.js";
 import InputPageBuilder from "./InputPageBuilder.js";
 
 import { sendMessage } from "./utils/web-socket-utils.js";
