@@ -9,8 +9,9 @@ class GerenciadorArquivos(object):
         Caminho para o arquivo
     """
 
-    def __init__(self, caminho_arq: str):
+    def __init__(self, caminho_arq: str, tamanho_entrada: int = 10):
         self.caminho_arq = caminho_arq
+        self.tamanho_entrada = tamanho_entrada
 
     def le_csv(self, nomes_cols: list = None, header=None, salvar: bool = True, df_caracteres: bool = False):
         """ Lê um arquivo CSV e retorna um dataframe do pandas formatado
@@ -28,7 +29,7 @@ class GerenciadorArquivos(object):
             df = pd.read_csv(self.caminho_arq, header=header)
 
             if df_caracteres:
-                tam_y = 7
+                tam_y = self.tamanho_entrada
                 tam_X = len(df.columns) - tam_y
 
                 cols_x = [f"atributo{num}" for num in range(tam_X)]
@@ -75,7 +76,7 @@ class GerenciadorArquivos(object):
         """
         try:
             if df_caracteres:  # se for o dataframe de caracteres, as últimas 7 são a coluna target
-                y_length = 7
+                y_length = self.tamanho_entrada
                 X_length = len(df.columns) - y_length
 
                 X = df.iloc[0:, 0: X_length].values.tolist()

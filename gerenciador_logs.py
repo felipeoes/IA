@@ -1,7 +1,6 @@
 import pandas as pd
 import json
 
-
 class GerenciadorLogs(object):
     """ Classe para gerenciar arquivos de log do Multilayer Perceptron"""
 
@@ -27,6 +26,13 @@ class GerenciadorLogs(object):
                                  erro_epoca, erro_geral]], columns=self.log.columns)], ignore_index=True)
         except Exception as e:
             print(f"Falha ao adicionar log! | Exceção: {e}")
+
+    def obter_atributo(self, coluna: str):
+        try:
+            return self.log.get(coluna)
+        except Exception as error:
+            print(f"Houve um erro ao obter o atributo {coluna} | {error}")
+            return None
 
     def log_completo(self):
         """ Retorna o dataframe de log completo """
