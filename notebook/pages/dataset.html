@@ -93,10 +93,10 @@
             const datasets = [
                 { name: "Dataset 7 Simples", file: "caracteres-limpo", size: 7},
                 { name: "Dataset 7 Ruido I", file: "caracteres-ruido", size: 7},
-                { name: "Dataset 7 Ruido II", file: "caracteres_ruido20", size: 7},
-                { name: "Dataset 11 Simples", file: "caracteres-limpo-11", size: 11},
-                { name: "Dataset 11 Ruido I", file: "dataset-11-letras-ruido-simples", size: 11},
-                { name: "Dataset 11 Ruido II", file: "dataset_11_caracteres_ruido_total_final_2", size: 11},
+                { name: "Dataset 7 Ruido II", file: "caracteres-ruido-2", size: 7},
+                { name: "Dataset 11 Simples", file: "caracteres-limpo-11-letras", size: 11},
+                { name: "Dataset 11 Ruido I", file: "caracteres-11-letras-ruido-simples", size: 11},
+                { name: "Dataset 11 Ruido II", file: "caracteres-ruido-11-letras-total", size: 11},
             ]
 
             const removeElements = (container) => container.replaceChildren()
@@ -178,7 +178,7 @@
 
             downloader.addEventListener("click", build_csv)
 
-            change_dataset("dataset_11_caracteres_ruido_total_final_2", 11)
+            change_dataset("caracteres-11-letras-ruido-simples", 11)
             build_buttons()
 
         </script>
