@@ -1,0 +1,81 @@
+</html><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inteligência Artificial | Visualizador de Dataset</title>
+</head>
+<body>
+    <main class="wrapper">
+        <h1>Inteligência Artificial - IA</h1>
+        <style>
+
+            .letters-container {
+                display: grid;
+                grid-template-columns: repeat(7, 1fr);
+                grid-template-rows: repeat(3, 1fr);
+                gap: 3rem;
+            }
+
+            .letter-container {
+                display: grid;
+                grid-template-columns: repeat(7, 20px);
+                grid-template-rows: repeat(9, 20px);
+                margin-bottom: 3rem;
+            }
+
+            .letters-container:nth-of-type(1) {
+                background-color: rgb(91, 242, 192);
+            }
+
+            .letters-container:nth-of-type(2) {
+                background-color: rgb(235, 80, 80);
+            }
+            
+            .letters-container:nth-of-type(3) {
+                background-color: rgb(142, 235, 80);
+            }
+
+
+            .letter-pixel {
+                position: relative;
+                cursor: pointer;
+            }
+
+            .letter-pixel.--none {
+                display: none;
+            }
+
+            .letter-input {
+                position: absolute;
+                height: 0;
+                width: 0;
+                top: 0;
+                left: 0;
+            }
+
+            .letter-decoration {
+                position: absolute;
+                height: 20px;
+                width: 20px;
+                top: 0;
+                left: 0;
+                border: 1px solid black;
+            }
+
+            .letter-input:checked ~ .letter-decoration {
+                background-color: black;
+            }
+        </style>
+        <div class="letters-container"></div>
+        <div class="letters-container"></div>
+        <div class="letters-container"></div>
+        <a id="btn-download">Fazer Download</a>
+        <script type="module">
+            import visualizer from './scripts/DatasetVisualizer.js'
+            visualizer("../data/validando-kfold.csv")
+        </script>
+    </main>
+</body>
+</html>

@@ -109,6 +109,7 @@ const createPage = (chunks, numberOfLettersPerRow) => {
             btn: document.getElementById("btn-download"),
             dataset: dataset,
             numberOfLettersPerRow
+
         })
     })
 }
@@ -128,4 +129,3 @@ export default ({
                         })
                         .then(log_properties)
                         .then( (dataset) => createPage(dataset, number_of_letters))
-                        .catch(console.error)
