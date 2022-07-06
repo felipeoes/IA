@@ -161,6 +161,55 @@ class MultilayerPerceptron(object):
             predito.append(saidas_saida)
 
         return predito
+    
+    def gera_matriz_de_confusao(self, X: list, y: list):
+        letras = [ "A", "B", "C", "D", "E", "J", "K", "L", "V", "Y", "Z"]
+
+        # Pega a quantidade de letras
+        tamanho_da_matriz = len(y[0])
+
+        # Gera uma matriz quadrada
+        matriz_de_confusao = [ [ 0 for _ in range(tamanho_da_matriz)] for _ in range(tamanho_da_matriz)]
+
+        # Limiar de distância entre neurônios
+        limiar = 0.2
+
+        for x, y_ in zip(X, y):
+            # Obtem o indice do neurônio ativado no rótulo
+            indice_esperado = y_.index(1)
+
+            # Faz o feedforwarding para obter a predição
+            _, saidas_escondida = self.camada_escondida.calcula_saida(x)
+            _, saidas_saida = self.camada_saida.calcula_saida(saidas_escondida)
+
+            # Ordenamos os neurônios de acordo com a sua ativação
+            saidas_copia = saidas_saida.copy()
+            saidas_copia.sort(reverse=True)
+
+            # Pegamos os dois neurônios que mais ativaram
+            primeiro_neuronio, segundo_neuronio, *_ = saidas_copia
+
+            # Iremos calcular se os neurônios chegaram em resultados parecidos
+            diferenca_aceitavel = (primeiro_neuronio - segundo_neuronio) > limiar
+
+            # Se a diferença entre os neurônios foi pequena, então ambos ativaram
+            # portanto, a rede não conseguiu predizer uma letra para a entrada
+            if diferenca_aceitavel is False:
+                primeira_letra = saidas_saida.index(primeiro_neuronio)
+                segunda_letra = saidas_saida.index(segundo_neuronio)
+                print(f"Não consegui prever entre a letra: {letras[primeira_letra]} e {letras[segunda_letra]}, o esperado era {letras[indice_esperado]}")
+                continue
+
+            # Caso contrário, o primeiro neurônio foi quem ativou
+            # e, iremos buscar o indice dele no vetor
+            indice_predito = saidas_saida.index(primeiro_neuronio)
+
+            print(f"A letra predita é {letras[indice_predito]} e o esperado era: {letras[indice_esperado]}")
+
+            # Somamos +1 na matriz
+            matriz_de_confusao[indice_esperado][indice_predito] += 1
+    
+        return matriz_de_confusao
 
     def to_json(self):
         """Função que desserializa a rede neural e transforma em um objeto json"""
@@ -197,10 +246,13 @@ class MultilayerPerceptron(object):
             modelo['camada_saida']['n_neuronios'],
             modelo['tx_aprendizagem']
         )
+
         for neuronio in modelo['camada_escondida']['neuronios']:
+            pesos = { int(indice) : valor for indice, valor in neuronio['pesos'].items() }
             mlp.camada_escondida.neuronios.append(
-                Perceptron(neuronio['pesos'], neuronio['bias'], mlp.tx_aprendizagem))
+                Perceptron(pesos, neuronio['bias'], mlp.tx_aprendizagem))
         for neuronio in modelo['camada_saida']['neuronios']:
+            pesos = { int(indice) : valor for indice, valor in neuronio['pesos'].items() }
             mlp.camada_saida.neuronios.append(
-                Perceptron(neuronio['pesos'], neuronio['bias'], mlp.tx_aprendizagem))
+                Perceptron(pesos, neuronio['bias'], mlp.tx_aprendizagem))
         return mlp

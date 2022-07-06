@@ -9,8 +9,13 @@ class InputPageBuilder {
   }
 
   init() {
+    this.overwriteTemplateColumns()
     this.buildLetters();
     this.btn?.addEventListener("click", this.download.bind(this));
+  }
+
+  overwriteTemplateColumns(){
+    this.root.style.gridTemplateColumns = `repeat(${this.numberOfLettersPerRow}, 1fr)`
   }
 
   drawLetter(container, index, checked) {
@@ -86,11 +91,3 @@ class InputPageBuilder {
 }
 
 export default InputPageBuilder;
-// const page = new InputPageBuilder({
-//     root: document.querySelector(".letters-container"),
-//     btn: document.getElementById("btn-download"),
-//     dataset: dataset_limpo,
-//     numberOfLettersPerRow: 7
-// })
-
-// page.download()
