@@ -1,5 +1,5 @@
 import pandas as pd
-
+import random
 
 class GerenciadorArquivos(object):
     """ Classe para gerenciar arquivos 
@@ -92,3 +92,41 @@ class GerenciadorArquivos(object):
         except Exception as e:
             print(f"Falha ao extrair X e y! | Exceção: {e}")
             return None, None
+
+    def separa_base_treinamento_validacao(self, X: list, y: list, percent_treino: float = 0.8):
+        """ Separa a base de treino e validação de acordo com a porcentagem de treino
+
+        Parâmetros:
+        X : list
+            Lista com os dados de treino
+        y : list
+            Lista com os rótulos dos dados de treino
+        porcentagem_treino : float
+            Porcentagem de treino
+        """
+        try:
+            # Operações são realizados sobre cópias dos dados
+            X_copia = X.copy()
+            y_copia = y.copy()
+            
+            tam_treino = round(len(X) * percent_treino)
+            X_treino = []
+            y_treino = []
+            X_validacao = []
+            y_validacao = []
+            
+            # Seleciona aleatoriamente os dados de treino e validação
+            for i in range(tam_treino):
+                index = random.randint(0, len(X_copia)-1)
+                X_treino.append(X_copia.pop(index))
+                y_treino.append(y_copia.pop(index))
+                
+            # Os dados restantes são os dados de validação
+            X_validacao = X_copia
+            y_validacao = y_copia
+
+            return X_treino, y_treino, X_validacao, y_validacao
+        except Exception as e:
+            print(
+                f"Falha ao separar base de treino e validação! | Exceção: {e}")
+            return None, None, None, None
