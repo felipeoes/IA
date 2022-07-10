@@ -1,4 +1,5 @@
 from gerenciador_logs import GerenciadorLogs
+import json
 
 class GerenciadorNotebook:
     """
@@ -9,51 +10,71 @@ class GerenciadorNotebook:
     def __init__(self, logger: GerenciadorLogs = None):
         self.caminho_notebook = "./notebook/data"
         self.logger = logger
+        self.matriz_confusao = None
+        self.predicoes = None
+        self.conjuntos = None
 
-    def salvar_relatorio_das_predicoes(self):
-        pass
+    @property
+    def conjuntos(self):
+        return self._conjuntos
 
-    def salvar_erros_treinamento(self):
-        erros = list(self.logger.obter_atributo("Erro epoca"))
-        self.salva_vetor_como_csv("erro_treinamento_mlp", erros)        
-        pass
+    @conjuntos.setter
+    def conjuntos(self, conjuntos):
+        self._conjuntos = conjuntos
+
+    @property
+    def matriz_confusao(self):
+        return self._matriz_confusao
     
-    def salvar_erros_validacao(self):
-        erros = list(self.logger.obter_atributo("Erro validacao epoca"))
-        self.salva_vetor_como_csv("erro_validacao_mlp", erros)        
-        pass
+    @matriz_confusao.setter
+    def matriz_confusao(self, matriz):
+        self._matriz_confusao = matriz
     
-    def salvar_matriz_confusao(self, matriz):
-        self.salva_matriz_como_csv("matriz_confusao", matriz)
-        pass
+    @property
+    def predicoes(self):
+        return self._predicoes
+    
+    @predicoes.setter
+    def predicoes(self, predicoes):
+        self._predicoes = predicoes
 
-    def salvar_log_treinamento(self):
+    def salvar_log_treinamento(self, nome):
         html = self.logger.log_html()
-        self.salvar_arquivo("log_mlp.html", html)
-
-    def salvar_arquivo(self, nome_arquivo, dados):
-        caminho_arquivo = f"{self.caminho_notebook}/{nome_arquivo}"
+        caminho_arquivo = f"{self.caminho_notebook}/notebook-{nome}.html"
         with open(caminho_arquivo, mode="w", encoding="utf-8") as arquivo:
-            arquivo.write(dados)
-    
-    def salva_matriz_como_csv(self, nome_arquivo: str, matriz):
-        caminho_arquivo = f"{self.caminho_notebook}/{nome_arquivo}.csv"
-        try:
-            with open(caminho_arquivo, mode="w", encoding="utf-8") as arquivo:
-                for linha in matriz:
-                    linha_str = ",".join(map(str, linha))
-                    arquivo.write(linha_str)
-                    arquivo.write("\n")
-        except Exception as error:
-            print(error)
-            print(f"Houve um erro ao salvar {nome_arquivo} como csv")
+            arquivo.write(html)
 
-    def salva_vetor_como_csv(self, nome_arquivo: str, vetor: list):
-        caminho_arquivo = f"{self.caminho_notebook}/{nome_arquivo}.csv"
-        try:
-            with open(caminho_arquivo, mode="w", encoding="utf-8") as arquivo:
-                vetor_str = ",".join(map(str, vetor))
-                arquivo.write(vetor_str)
-        except Exception as error:
-            print(error)
-            print(f"Houve um erro ao salvar {nome_arquivo} como csv")
+    def grava_notebook(self, nome_notebook = "1"):
+        caminho_arquivo = f"{self.caminho_notebook}/notebook-{nome_notebook}.json"
+        erros_treinamento = self.logger.obter_atributo("Erro epoca")
+        erros_validacao = self.logger.obter_atributo("Erro validacao")
+
+        self.salvar_log_treinamento(nome_notebook)
+
+        with open(caminho_arquivo, mode="w", encoding="utf-8") as arquivo:
+            notebook = Notebook(
+                self.conjuntos,
+                list(erros_treinamento),
+                list(erros_validacao),
+                self.matriz_confusao,
+                self.predicoes
+            ).to_json()
+
+            arquivo.write(json.dumps(notebook))
+    
+class Notebook:
+    def __init__(self, conjuntos, erros_treinamento, erros_validacao, matriz_confusao, log_predicoes):
+        self.conjuntos = conjuntos
+        self.erros_treinamento = erros_treinamento
+        self.erros_validacao = erros_validacao
+        self.matriz_confusao = matriz_confusao
+        self.log_predicoes = log_predicoes
+
+    def to_json(self):
+        return {
+            'conjuntos': self.conjuntos,
+            'erros_treinamento': self.erros_treinamento,
+            'erros_validacao': self.erros_validacao,
+            'matriz_confusao': self.matriz_confusao,
+            'log_predicoes': self.log_predicoes
+        }

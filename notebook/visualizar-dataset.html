@@ -5,38 +5,59 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inteligência Artificial | Visualizador de Dataset</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <main class="wrapper">
-        <h1>Inteligência Artificial - IA</h1>
+        <h1 class="section-title">Inteligência Artificial - IA</h1>
         <style>
+            * {
+                font-family: 'IBM Plex Mono', monospace;
+            }
+
+            .section-title {
+                text-align: center;
+            }
 
             .letters-container {
                 display: grid;
-                grid-template-columns: repeat(7, 1fr);
-                grid-template-rows: repeat(3, 1fr);
-                gap: 3rem;
+                grid-template-columns: repeat(7, 120px) !important;
+                grid-template-rows: repeat(3, 100px) !important;
+                gap: 1rem;
+                margin: 0 auto;
+                padding: 0 2rem;
             }
 
             .letter-container {
                 display: grid;
-                grid-template-columns: repeat(7, 20px);
-                grid-template-rows: repeat(9, 20px);
+                grid-template-columns: repeat(7, 10px);
+                grid-template-rows: repeat(9, 10px);
                 margin-bottom: 3rem;
             }
 
-            .letters-container:nth-of-type(1) {
+            .set-container {
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+
+            .set-container h1 {
+                text-align: center;
+            }
+
+            .set-container.--trainment {
                 background-color: rgb(91, 242, 192);
             }
 
-            .letters-container:nth-of-type(2) {
+            .set-container.--validation {
+                max-width: 1000px;
+                margin: 0 auto;
                 background-color: rgb(235, 80, 80);
             }
-            
-            .letters-container:nth-of-type(3) {
-                background-color: rgb(142, 235, 80);
-            }
 
+            .set-container.--teste {
+                background-color: rgb(112, 249, 91);
+            }
 
             .letter-pixel {
                 position: relative;
@@ -57,8 +78,8 @@
 
             .letter-decoration {
                 position: absolute;
-                height: 20px;
-                width: 20px;
+                height: 10px;
+                width: 10px;
                 top: 0;
                 left: 0;
                 border: 1px solid black;
@@ -68,13 +89,50 @@
                 background-color: black;
             }
         </style>
-        <div class="letters-container"></div>
-        <div class="letters-container"></div>
-        <div class="letters-container"></div>
+        <div class="set-container --trainment">
+            <h1>Conjunto de Validação</h1> 
+            <div class="letters-container">
+            </div>
+        </div>
+        <div class="set-container --validation">
+            <h1>Conjunto de Validação</h1> 
+            <div class="letters-container">
+            </div>
+        </div>
+        <div class="set-container --teste">
+            <h1>Conjunto de Teste</h1> 
+            <div class="letters-container">
+            </div>
+        </div>
         <a id="btn-download">Fazer Download</a>
-        <script type="module">
-            import visualizer from './scripts/DatasetVisualizer.js'
-            visualizer("../data/validando-kfold.csv")
+        <script type="module" async >
+            import { fetchJSON } from "./scripts/utils/http-utils.js";
+            import { createPage } from './scripts/DatasetVisualizer.js'
+
+            const notebook = new URLSearchParams(window.location.search).get("report") ?? "report-1"
+
+            const { conjuntos: { treinamento, validacao, teste } } = await fetchJSON(notebook)
+
+            console.log(validacao)
+            const datasets = Array.of(treinamento, validacao, teste)
+            const size = datasets.at(0).length
+
+            function build(){
+                createPage(datasets, Math.floor(size / 2))
+                document.querySelectorAll('.letters-container')
+                .forEach( container => {
+                    const parent = container.parentElement
+
+                    const size = container.children.length
+
+                    if( size === 0 ){
+                        parent.style.display = 'none'
+                    }
+
+                })
+            }
+            
+            build()
         </script>
     </main>
 </body>

@@ -2,10 +2,10 @@ import dataset from "../data/modelo-letras.js";
 import InputPageBuilder from "./InputPageBuilder.js";
 
 import { sendMessage } from "./utils/web-socket-utils.js";
-import { fetchFile } from "./utils/http-utils.js";
+import { fetchFile, fetchJSON } from "./utils/http-utils.js";
 
 class NotebookPageController {
-  static letters = ["A", "B", "C", "D", "E", "J", "K"];
+  static letters = ["A", "B", "C", "D", "E", "J", "K", "L", "V", "Y", "Z"];
 
   constructor() {
     this.letterInputs = document.querySelectorAll(".letter input");
@@ -13,10 +13,76 @@ class NotebookPageController {
     this.btn = document.getElementById("socket-send");
 
     this.attachEventListeners();
-    this.buildTrainmentResultChart();
-    this.buildTrainmentLogTable();
     this.buildInputs();
     this.buildTabIndexes();
+    this.buildNotebook();
+  }
+
+  async buildNotebook(){
+
+      const notebook = new URLSearchParams(window.location.search).get("report") ?? "report-1"
+
+      const {
+        conjuntos,
+        erros_treinamento,
+        erros_validacao,
+        matriz_confusao,
+        log_predicoes
+      } = await fetchJSON(notebook)
+
+      const hasValidationSet = conjuntos.validacao.length > 0
+
+      const datasets = hasValidationSet 
+        ? Array.of(erros_treinamento, erros_validacao)
+        : Array.of(erros_treinamento)
+      
+      const response = datasets.map( data => this.buildGraphData(data))
+
+      this.buildTrainmentResultChart({ response })
+      this.buildPredictionLog(log_predicoes)
+      this.buildMatrix(matriz_confusao)
+      this.buildTrainmentLogTable(notebook)
+  }
+
+  buildPredictionLog(predictions){
+    const section = document.getElementById("prediction-log")
+    section.insertAdjacentHTML("beforeend", `${predictions.map( prediction => {
+      return `
+        <li> ${prediction} </li>
+      `
+    }).join("")}`)
+  }
+
+  buildMatrix(matrix){
+     const section = document.querySelector("#matrix table")
+
+     matrix.forEach( (row, index) => {
+        const addCssModifier = (rowIndex, elementIndex) => {
+          if( rowIndex === elementIndex && row[rowIndex] !== 0 ){
+              switch( row[rowIndex] ) {
+                case 3: return 'fully'
+                case 2: return 'half'
+                default: return ''
+              }    
+          }
+        }
+
+        section.insertAdjacentHTML("beforeend", `
+            <tr>
+              <td> ${NotebookPageController.letters.at(index)} </td>
+              ${row.map( (value, i) => `<td class="${ addCssModifier(index, i)}"> ${value} </td> `).join("") }
+          </tr>        
+        `)
+     })
+  }
+
+  buildGraphData(errors){
+    return errors.reduce((accumulator, actual, index) => {
+      accumulator.at(0).push(index)
+      accumulator.at(1).push(actual)
+
+      return accumulator
+    }, Array.of( [], [] ) )
   }
 
   buildTabIndexes() {
@@ -25,8 +91,8 @@ class NotebookPageController {
       .forEach((section, index) => section.setAttribute("tabindex", index + 1));
   }
 
-  async buildTrainmentLogTable() {
-    const html = await fetchFile("log_mlp_recorte.html");
+  async buildTrainmentLogTable(file) {
+    const html = await fetchFile(`${file}.html`);
     const container = document.querySelector(".log-table");
 
     container.insertAdjacentHTML("beforeend", html);
@@ -47,23 +113,29 @@ class NotebookPageController {
     return [labels, errors];
   }
 
-  async buildTrainmentResultChart() {
-    const [labels, data] = await this.fetchTrainmentResult();
+  async buildTrainmentResultChart({ id = "mlp-error", response } = {} ) {
+    
+    const colors = [
+      { background: "#c21947", border: "#e44c75" },
+      { background: "#19c8b7", border: "#005e54" },
+    ]
 
-    const context = document.getElementById("mlp-error").getContext("2d");
+    const datasets = response.map( ([_, values], index) => ({
+      label: "Erro",
+      data: values,
+      backgroundColor: colors[index].background,
+      borderColor: colors[index].border,
+    }))
+
+    const labels = response.at(0).at(0)
+
+    const context = document.getElementById(id).getContext("2d");
 
     new Chart(context, {
       type: "line",
       data: {
-        labels,
-        datasets: [
-          {
-            label: "Erro",
-            data,
-            backgroundColor: "#c21947",
-            borderColor: "#e44c75",
-          },
-        ],
+        labels: labels,
+        datasets
       },
       options: {},
     });
@@ -179,7 +251,7 @@ class NotebookPageController {
     new InputPageBuilder({
       root: document.querySelector(".letter"),
       dataset: Array.of(dataset.at(0)),
-      numberOfLettersPerRow: 7,
+      numberOfLettersPerRow: 11,
     });
   }
 

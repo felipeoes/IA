@@ -31,6 +31,7 @@ header strong {
 
 .nav-letters {
     display: flex;
+    flex-wrap: wrap;
     margin-bottom: 2rem;
     gap: 2rem;
 }
@@ -58,4 +59,28 @@ header strong {
     border-radius: 4px;
     font-size: 1.25rem;
     font-weight: bold;
+}
+
+
+#matrix table {
+    font-size: 1.5rem;
+    border-collapse: collapse;
+}
+#matrix table th:first-child td,
+#matrix table tr td:first-child {
+    font-weight: bold;
+}
+
+#matrix table td, #matrix table th {
+    border: 1px solid var(--primary-color);
+    padding: .5rem;
+}
+
+#matrix td.fully {
+    font-weight: bold;
+    background-color: #f28ba7; 
+}
+
+#matrix td.half {
+    background-color: #e1a6b6; 
 }
