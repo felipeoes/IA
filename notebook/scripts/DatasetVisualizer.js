@@ -99,7 +99,7 @@ const parse = pipe(
     (lines) => lines.map(parseLine),
 )
 
-const createPage = (chunks, numberOfLettersPerRow) => {
+export const createPage = (chunks, numberOfLettersPerRow) => {
     const containers = document.querySelectorAll(".letters-container")
     console.log(containers)
 

@@ -15,6 +15,16 @@ class Amostra:
     
     def obter_fold(self, indice):
         return self.folds[indice]
+
+    def obter_tuplas_holdout(self):
+        treinamento, validacao = self.folds[0]
+
+        return [
+            treinamento[0],
+            treinamento[1],
+            validacao[0],
+            validacao[1]
+        ]
     
     def desagrupando_k_fold(self, fold):
         conjunto_de_treinamento, conjunto_de_validacao = fold
@@ -57,13 +67,17 @@ class Amostra:
 class GeradorDeAmostras:
 
     letras = {
-        "A": [1, 0, 0, 0, 0, 0, 0],
-        "B": [0, 1, 0, 0, 0, 0, 0],
-        "C": [0, 0, 1, 0, 0, 0, 0],
-        "D": [0, 0, 0, 1, 0, 0, 0],
-        "E": [0, 0, 0, 0, 1, 0, 0],
-        "J": [0, 0, 0, 0, 0, 1, 0],
-        "K": [0, 0, 0, 0, 0, 0, 1],
+        "A": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        "B": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        "C": [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+        "D": [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+        "E": [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+        "J": [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+        "K": [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+        "L": [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+        "V": [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+        "Y": [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+        "Z": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     }
 
     def obtem_letra(self, alvo):

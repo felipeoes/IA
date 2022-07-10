@@ -2,7 +2,7 @@ import dataset from "../data/modelo-letras.js";
 import InputPageBuilder from "./InputPageBuilder.js";
 
 import { sendMessage } from "./utils/web-socket-utils.js";
-import { fetchFile } from "./utils/http-utils.js";
+import { fetchFile, fetchJSON } from "./utils/http-utils.js";
 
 class NotebookPageController {
   static letters = ["A", "B", "C", "D", "E", "J", "K"];
@@ -13,10 +13,60 @@ class NotebookPageController {
     this.btn = document.getElementById("socket-send");
 
     this.attachEventListeners();
-    this.buildTrainmentResultChart();
     this.buildTrainmentLogTable();
     this.buildInputs();
     this.buildTabIndexes();
+    this.buildNotebook();
+  }
+
+  async buildNotebook(){
+      const {
+        erros_treinamento,
+        erros_validacao,
+        matriz_confusao,
+        log_predicoes
+      } = await fetchJSON("notebook-2")
+      
+
+      const treinamento_as_graph = this.buildGraphData(erros_treinamento)
+      const validation_as_graph = this.buildGraphData(erros_validacao)
+
+      this.buildTrainmentResultChart({response: Array.of(treinamento_as_graph, validation_as_graph)})
+      this.buildPredictionLog(log_predicoes)
+      this.buildMatrix(matriz_confusao)
+  }
+
+  buildPredictionLog(predictions){
+    const section = document.getElementById("prediction-log")
+    section.insertAdjacentHTML("beforeend", `${predictions.map( prediction => {
+      return `
+        <li> ${prediction} </li>
+      `
+    }).join("")}`)
+  }
+
+  buildMatrix(matrix){
+     const section = document.querySelector("#matrix table")
+     const size = matrix.at(0).length
+
+     matrix.forEach( (row, index) => {
+        const allCorreclty = row.filter( value => value === 0).length === (size - 1)
+        section.insertAdjacentHTML("beforeend", `
+            <tr>
+              <td> ${NotebookPageController.letters.at(index)} </td>
+              ${row.map( (value, i) => `<td class="${ (i === index && allCorreclty && row[index] !== 0) ? 'checked': '' }"> ${value} </td> `).join("") }
+          </tr>        
+        `)
+     })
+  }
+
+  buildGraphData(errors){
+    return errors.reduce((accumulator, actual, index) => {
+      accumulator.at(0).push(index)
+      accumulator.at(1).push(actual)
+
+      return accumulator
+    }, Array.of( [], [] ) )
   }
 
   buildTabIndexes() {
@@ -47,23 +97,29 @@ class NotebookPageController {
     return [labels, errors];
   }
 
-  async buildTrainmentResultChart() {
-    const [labels, data] = await this.fetchTrainmentResult();
+  async buildTrainmentResultChart({ id = "mlp-error", response } = {} ) {
+    
+    const colors = [
+      { background: "#c21947", border: "#e44c75" },
+      { background: "#19c8b7", border: "#005e54" },
+    ]
 
-    const context = document.getElementById("mlp-error").getContext("2d");
+    const datasets = response.map( ([_, values], index) => ({
+      label: "Erro",
+      data: values,
+      backgroundColor: colors[index].background,
+      borderColor: colors[index].border,
+    }))
+
+    const labels = response.at(0).at(0)
+
+    const context = document.getElementById(id).getContext("2d");
 
     new Chart(context, {
       type: "line",
       data: {
-        labels,
-        datasets: [
-          {
-            label: "Erro",
-            data,
-            backgroundColor: "#c21947",
-            borderColor: "#e44c75",
-          },
-        ],
+        labels: labels,
+        datasets
       },
       options: {},
     });
