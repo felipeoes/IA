@@ -5,7 +5,7 @@ import { sendMessage } from "./utils/web-socket-utils.js";
 import { fetchFile, fetchJSON } from "./utils/http-utils.js";
 
 class NotebookPageController {
-  static letters = ["A", "B", "C", "D", "E", "J", "K"];
+  static letters = ["A", "B", "C", "D", "E", "J", "K", "L", "V", "Y", "Z"];
 
   constructor() {
     this.letterInputs = document.querySelectorAll(".letter input");
@@ -13,27 +13,35 @@ class NotebookPageController {
     this.btn = document.getElementById("socket-send");
 
     this.attachEventListeners();
-    this.buildTrainmentLogTable();
     this.buildInputs();
     this.buildTabIndexes();
     this.buildNotebook();
   }
 
   async buildNotebook(){
+
+      const notebook = new URLSearchParams(window.location.search).get("report") ?? "report-1"
+
       const {
+        conjuntos,
         erros_treinamento,
         erros_validacao,
         matriz_confusao,
         log_predicoes
-      } = await fetchJSON("notebook-2")
+      } = await fetchJSON(notebook)
+
+      const hasValidationSet = conjuntos.validacao.length > 0
+
+      const datasets = hasValidationSet 
+        ? Array.of(erros_treinamento, erros_validacao)
+        : Array.of(erros_treinamento)
       
+      const response = datasets.map( data => this.buildGraphData(data))
 
-      const treinamento_as_graph = this.buildGraphData(erros_treinamento)
-      const validation_as_graph = this.buildGraphData(erros_validacao)
-
-      this.buildTrainmentResultChart({response: Array.of(treinamento_as_graph, validation_as_graph)})
+      this.buildTrainmentResultChart({ response })
       this.buildPredictionLog(log_predicoes)
       this.buildMatrix(matriz_confusao)
+      this.buildTrainmentLogTable(notebook)
   }
 
   buildPredictionLog(predictions){
@@ -47,14 +55,22 @@ class NotebookPageController {
 
   buildMatrix(matrix){
      const section = document.querySelector("#matrix table")
-     const size = matrix.at(0).length
 
      matrix.forEach( (row, index) => {
-        const allCorreclty = row.filter( value => value === 0).length === (size - 1)
+        const addCssModifier = (rowIndex, elementIndex) => {
+          if( rowIndex === elementIndex && row[rowIndex] !== 0 ){
+              switch( row[rowIndex] ) {
+                case 3: return 'fully'
+                case 2: return 'half'
+                default: return ''
+              }    
+          }
+        }
+
         section.insertAdjacentHTML("beforeend", `
             <tr>
               <td> ${NotebookPageController.letters.at(index)} </td>
-              ${row.map( (value, i) => `<td class="${ (i === index && allCorreclty && row[index] !== 0) ? 'checked': '' }"> ${value} </td> `).join("") }
+              ${row.map( (value, i) => `<td class="${ addCssModifier(index, i)}"> ${value} </td> `).join("") }
           </tr>        
         `)
      })
@@ -75,8 +91,8 @@ class NotebookPageController {
       .forEach((section, index) => section.setAttribute("tabindex", index + 1));
   }
 
-  async buildTrainmentLogTable() {
-    const html = await fetchFile("log_mlp_recorte.html");
+  async buildTrainmentLogTable(file) {
+    const html = await fetchFile(`${file}.html`);
     const container = document.querySelector(".log-table");
 
     container.insertAdjacentHTML("beforeend", html);
@@ -235,7 +251,7 @@ class NotebookPageController {
     new InputPageBuilder({
       root: document.querySelector(".letter"),
       dataset: Array.of(dataset.at(0)),
-      numberOfLettersPerRow: 7,
+      numberOfLettersPerRow: 11,
     });
   }
 

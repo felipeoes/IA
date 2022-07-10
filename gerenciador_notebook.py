@@ -38,14 +38,18 @@ class GerenciadorNotebook:
     def predicoes(self, predicoes):
         self._predicoes = predicoes
 
-    def salvar_log_treinamento(self):
+    def salvar_log_treinamento(self, nome):
         html = self.logger.log_html()
-        self.salvar_arquivo("log_mlp.html", html)
+        caminho_arquivo = f"{self.caminho_notebook}/notebook-{nome}.html"
+        with open(caminho_arquivo, mode="w", encoding="utf-8") as arquivo:
+            arquivo.write(html)
 
     def grava_notebook(self, nome_notebook = "1"):
         caminho_arquivo = f"{self.caminho_notebook}/notebook-{nome_notebook}.json"
         erros_treinamento = self.logger.obter_atributo("Erro epoca")
         erros_validacao = self.logger.obter_atributo("Erro validacao")
+
+        self.salvar_log_treinamento(nome_notebook)
 
         with open(caminho_arquivo, mode="w", encoding="utf-8") as arquivo:
             notebook = Notebook(

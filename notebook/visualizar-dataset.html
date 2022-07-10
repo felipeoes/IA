@@ -100,7 +100,9 @@
             import { fetchJSON } from "./scripts/utils/http-utils.js";
             import { createPage } from './scripts/DatasetVisualizer.js'
 
-            const { conjuntos: { treinamento, validacao} } = await fetchJSON("notebook-2")
+            const notebook = new URLSearchParams(window.location.search).get("report") ?? "report-1"
+
+            const { conjuntos: { treinamento, validacao} } = await fetchJSON(notebook)
 
             const datasets = Array.of(treinamento, validacao)
             const size = datasets.at(0).length
