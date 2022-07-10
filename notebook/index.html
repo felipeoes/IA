@@ -31,19 +31,36 @@
             <p>
                 A nossa Multilayer Perceptron foi construida com as seguintes características:
             </p>
+            <p> Quando utilizamos o conjunto de dados com 7 caracteres:</p>
             <blockquote>
                 <p> <strong> Camada de Entrada: </strong> 63 neurônios</p>
-                <p> <strong> Camada Escondida: </strong> 15 neurônios</p>
+                <p> <strong> Camada Escondida: </strong> 10 neurônios</p>
                 <p> <strong> Camada de Saída: </strong> 7 neurônios</p>
+                <p> <strong> Função de Ativação: </strong> Sigmóide</p>    
+            </blockquote>
+            <br/>
+            <p> Quando utilizamos o conjunto de dados com 11 caracteres:</p>
+            <blockquote>
+                <p> <strong> Camada de Entrada: </strong> 63 neurônios</p>
+                <p> <strong> Camada Escondida: </strong> 20 neurônios</p>
+                <p> <strong> Camada de Saída: </strong> 11 neurônios</p>
                 <p> <strong> Função de Ativação: </strong> Sigmóide</p>    
             </blockquote>
         </section>
         <section>
-            <h1 class="section-title">Definições do Treinamento</h1>
+            <h1 class="section-title">Definições do Treinamento e Teste</h1>
             <p>
-                Para realizar o treinamento da nossa rede neural:
+                Para realizar o treinamento da nossa rede neural utilizamos o conjuntos de dados <strong> "Caracteres Limpos" </strong>.
             </p>
-            
+            <p> 
+                Esse conjunto de dados, quando havia parada antecipada com validação, era dividido 70% para treinamento e 30% para validação,
+                caso não houvesse validação 100% do conjunto era utilizado para treinamento.
+            </p>
+            <p>
+                Para realizar os testes da rede utilizamos o conjunto de dados <strong> "Caracteres com Ruído"</strong>
+                de forma a observar como a rede se comporta avaliando caracteres com diferenças do que foi aprendido durante
+                o treinamento
+            </p> 
         </section>
         <section>
             <h1 class="section-title">Log do Treinamento</h1>

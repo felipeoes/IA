@@ -55,6 +55,10 @@
                 background-color: rgb(235, 80, 80);
             }
 
+            .set-container.--teste {
+                background-color: rgb(112, 249, 91);
+            }
+
             .letter-pixel {
                 position: relative;
                 cursor: pointer;
@@ -95,6 +99,11 @@
             <div class="letters-container">
             </div>
         </div>
+        <div class="set-container --teste">
+            <h1>Conjunto de Teste</h1> 
+            <div class="letters-container">
+            </div>
+        </div>
         <a id="btn-download">Fazer Download</a>
         <script type="module" async >
             import { fetchJSON } from "./scripts/utils/http-utils.js";
@@ -102,13 +111,28 @@
 
             const notebook = new URLSearchParams(window.location.search).get("report") ?? "report-1"
 
-            const { conjuntos: { treinamento, validacao} } = await fetchJSON(notebook)
+            const { conjuntos: { treinamento, validacao, teste } } = await fetchJSON(notebook)
 
-            const datasets = Array.of(treinamento, validacao)
+            console.log(validacao)
+            const datasets = Array.of(treinamento, validacao, teste)
             const size = datasets.at(0).length
 
-            createPage(datasets, Math.floor(size / 2))
+            function build(){
+                createPage(datasets, Math.floor(size / 2))
+                document.querySelectorAll('.letters-container')
+                .forEach( container => {
+                    const parent = container.parentElement
 
+                    const size = container.children.length
+
+                    if( size === 0 ){
+                        parent.style.display = 'none'
+                    }
+
+                })
+            }
+            
+            build()
         </script>
     </main>
 </body>
