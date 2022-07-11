@@ -13,7 +13,7 @@ class CamadaMLP(object):
     def inicializa_pesos(self, n_observacoes: int, tx_aprendizagem: float):
         """ Inicializa os pesos dos neuronios da camada de acordo com o número de observações na base de treino """
         for _ in range(self.n_neuronios):
-            pesos = {col_num: random.uniform(-0.1, 0.9)
+            pesos = {col_num: random.uniform(-0.5, 0.5)
                      for col_num in range(n_observacoes)}
             bias = random.random()
             self.neuronios.append(Perceptron(pesos, bias, tx_aprendizagem))
@@ -91,7 +91,7 @@ class MultilayerPerceptron(object):
         Taxa de aprendizagem utilizada no treinamento
     """
 
-    def __init__(self, n_entrada: int, n_escondida: int, n_saida: int, tx_aprendizagem=0.1, limiar: float = 0.001, gerenciador_logs: GerenciadorLogs = None):
+    def __init__(self, n_entrada: int, n_escondida: int, n_saida: int, tx_aprendizagem=0.1, limiar: float = 0.0001, gerenciador_logs: GerenciadorLogs = None):
         self.camada_entrada = CamadaEntrada(n_entrada)
         self.camada_escondida = CamadaEscondida(n_escondida)
         self.camada_saida = CamadaSaida(n_saida)
@@ -141,11 +141,10 @@ class MultilayerPerceptron(object):
             erro_epoca = self.calcula_erro_quadratico_medio(erro_saida)
             erro_validacao += erro_epoca
         return erro_validacao
-        # return erro_validacao / len(X)
 
     def deve_parar(self, erro_geral: float, qtde_epocas_sem_melhora: int):
         """ Verifica se a rede deve parar de treinar """
-        return erro_geral < self.limiar or qtde_epocas_sem_melhora > 10 
+        return erro_geral < self.limiar or qtde_epocas_sem_melhora > 50
 
     def treina(self, X: list, y: list, epocas: int = 200, conj_validacao: tuple = None, valor_min_validacao: float = 0.0001):
         """ Treina a rede neural multilayer por meio do algoritmo de backpropagation na sua forma de gradiente descendente """
@@ -155,11 +154,12 @@ class MultilayerPerceptron(object):
         self.camada_saida.inicializa_pesos(
             self.camada_escondida.n_neuronios, tx_aprendizagem=self.tx_aprendizagem)
 
-        erro_validacao = 0
+        
         qtde_epocas_sem_melhora = 0
-    
         for epoca in range(epocas):
             erro_epoca = 0
+            erro_validacao = 0
+            
             for x, y_ in zip(X, y):
                 """Forward"""
                 # Calcula a saída da camada escondida
@@ -191,7 +191,7 @@ class MultilayerPerceptron(object):
             if conj_validacao is not None:
                 erro_val = self.erro_validacao(
                     conj_validacao[0], conj_validacao[1])
-                melhoria = erro_validacao - erro_val > valor_min_validacao # checa se a melhoria em relação à epoca passada é maior que o valor mínimo tolerado
+                melhoria = (erro_validacao - erro_val) < valor_min_validacao # checa se a melhoria em relação à epoca passada é maior que o valor mínimo tolerado
    
                 qtde_epocas_sem_melhora = 0 if (melhoria or epoca == 0) else qtde_epocas_sem_melhora + 1
                 erro_validacao = erro_val
@@ -199,7 +199,7 @@ class MultilayerPerceptron(object):
             self.gerenciador_logs.adiciona_log(self.__class__.__name__, x,  saidas_saida, self.camada_escondida.neuronios,
                                                self.camada_saida.neuronios, self.tx_aprendizagem, epoca, -1, self.limiar, epocas, erro_epoca, erro_validacao)
 
-            print(f"Epoca: {epoca} - Erro: {erro_epoca}")
+            print(f"Epoca: {epoca} - Erro: {erro_epoca} - Erro de validação: {erro_validacao}")
 
             if self.deve_parar(erro_epoca, qtde_epocas_sem_melhora): 
                 break

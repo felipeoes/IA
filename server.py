@@ -24,27 +24,11 @@ def json_keys_to_int(x):
             pass
     return x
 
-
-if os.path.exists("modelo_treinado.json"):
-    with open("modelo_treinado.json", "r") as arq_json:
+PATH = "modelos/modelo-10-07-2022-22-15-18.json"
+if os.path.exists(PATH):
+    with open(PATH, "r") as arq_json:
         json_lido = json.loads(arq_json.read(), object_hook=json_keys_to_int)
         modelo = MultilayerPerceptron.from_json(json_lido)
-
-        gerenciador_ruidos = GerenciadorArquivos(
-            "dados/caracteres-ruido.csv", tamanho_entrada=7)
-        base_caracteres_ruidos = gerenciador_ruidos.le_csv(
-            df_caracteres=True, salvar=False)
-        X_caracteres_ruido, y_caracteres_ruido = gerenciador_ruidos.extrai_X_y(
-            base_caracteres_ruidos, True)
-
-        predito = modelo.prediz(X_caracteres_ruido)
-
-        # Decodifica os vetores de predição para caracteres
-        letras_preditas = decodifica_vetor_predicao(predito)
-        letras_reais = decodifica_vetor_predicao(y_caracteres_ruido)
-        plota_matriz_de_confusao(
-            letras_reais, letras_preditas, "Matriz de confusão")
-
 
 else:
     modelo = MultilayerPerceptron(len(
